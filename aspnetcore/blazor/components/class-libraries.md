@@ -1,21 +1,20 @@
 ---
-title: Consume ASP.NET Core Razor components from Razor class libraries
+title: Consume ASP.NET Core Razor components from a Razor class library (RCL)
 author: guardrex
-description: Discover how components can be included in Blazor apps from an external Razor class libraries.
+description: Discover how components can be included in Blazor apps from an external Razor class library (RCL).
 monikerRange: '>= aspnetcore-3.1'
 ms.author: riande
 ms.custom: mvc
-ms.date: 04/07/2021
-no-loc: [Home, Privacy, Kestrel, appsettings.json, "ASP.NET Core Identity", cookie, Cookie, Blazor, "Blazor Server", "Blazor WebAssembly", "Identity", "Let's Encrypt", Razor, SignalR]
+ms.date: 11/08/2022
 uid: blazor/components/class-libraries
 ---
-# Consume ASP.NET Core Razor components from Razor class libraries
+# Consume ASP.NET Core Razor components from a Razor class library (RCL)
 
-::: moniker range=">= aspnetcore-6.0"
+:::moniker range=">= aspnetcore-6.0"
 
 Components can be shared in a [Razor class library (RCL)](xref:razor-pages/ui-class) across projects. Include components and static assets in an app from:
 
-* Another project in the solution.
+* Another project in the [solution](xref:blazor/tooling#visual-studio-solution-file-sln).
 * A referenced .NET library.
 * A NuGet package.
 
@@ -59,17 +58,17 @@ If the **Support pages and views** checkbox is selected to support pages and vie
 # [Visual Studio for Mac](#tab/visual-studio-mac)
 
 1. Create a new project.
-1. In the sidebar under **Web and Console**, select **App**. Under **ASP.NET Core**, select **Razor Class Library** from the project templates shown. Select **Next**.
-1. Select the target framework for the library with the **Target Framework** dropdown list. Select **Next**.
-1. In the **Configure your new Class Library** dialog, provide a project name in the **Project Name** field. Examples in this topic use the project name `ComponentLibrary`. Select **Create**.
+1. In the sidebar under **Web and Console**, select **App**. Under **ASP.NET Core**, select **Razor Class Library** from the project templates. Select **Continue**.
+1. Select the target framework for the library with the **Target framework** dropdown list. Select **Continue**.
+1. Provide a project name in the **Project name** field. Examples in this topic use the project name `ComponentLibrary`. Select **Create**.
 1. Add the RCL to a solution:
    1. Open the solution.
-   1. Right-click the solution in **Solution Explorer**. Select **Add** > **Existing Project**.
+   1. Right-click the solution in the **Solution** sidebar and select **Add** > **Existing Project**. Alternatively, use the **Add** > **Existing Project** menu command from the **File** menu.
    1. Navigate to the RCL's project file.
-   1. Select the RCL's project file (`.csproj`).
+   1. Select the RCL's project file (`.csproj`) and select **Open**.
 1. Add a reference to the RCL from the app:
-   1. Right-click the app project. Select **Add** > **Reference**.
-   1. Select the RCL project. Select **OK**.
+   1. Right-click the app project. Select **Add** > **Reference**. Alternatively, select the **Add Project Reference** menu command from the **Project** menu.
+   1. Select the RCL project's checkbox and reference the project with the **Select** button.
 
 If the **Support pages and views** checkbox is selected to support pages and views when generating the RCL from the template:
 
@@ -170,7 +169,13 @@ Alternatively, add a [`@using`](xref:mvc/views/razor#using) directive and use th
 <Component1 />
 ```
 
-For library components that use [CSS isolation](xref:blazor/components/css-isolation), the component styles are automatically made available to the consuming app. There's no need to link the library's individual component stylesheets in the app that consumes the library. For the preceding examples, `Component1`'s stylesheet (`Component1.razor.css`) is included automatically.
+For library components that use [CSS isolation](xref:blazor/components/css-isolation), the component styles are automatically made available to the consuming app. There's no need to manually link or import the library's individual component stylesheets or its bundled CSS file in the app that consumes the library. The app uses CSS imports to reference the RCL's bundled styles. The bundled styles aren't published as a static web asset of the app that consumes the library. For a class library named `ClassLib` and a Blazor app with a `BlazorSample.styles.css` stylesheet, the RCL's stylesheet is imported at the top of the app's stylesheet automatically at build time:
+  
+```css
+@import '_content/ClassLib/ClassLib.bundle.scp.css';
+```
+
+For the preceding examples, `Component1`'s stylesheet (`Component1.razor.css`) is bundled automatically.
 
 `Component1.razor.css` in the `ComponentLibrary` RCL:
 
@@ -189,7 +194,10 @@ The background image is also included from the RCL project template and resides 
 
 ![Diagonally-striped background image from the RCL project template](~/blazor/components/class-libraries/_static/background.png)
 
-To provide additional library component styles from stylesheets in the library's `wwwroot` folder, link the stylesheets using the framework's `Link` component.
+To provide additional library component styles from stylesheets in the library's `wwwroot` folder, add stylesheet `<link>` tags to the RCL's consumer, as the next example demonstrates.
+
+> [!IMPORTANT]
+> Generally, library components use [CSS isolation](xref:blazor/components/css-isolation) to bundle and provide component styles. Component styles that rely upon CSS isolation are automatically made available to the app that uses the RCL. There's no need to manually link or import the library's individual component stylesheets or its bundled CSS file in the app that consumes the library. The following example is for providing global stylesheets *outside of CSS isolation*, which usually isn't a requirement for typical apps that consume RCLs.
 
 The following background image is used in the next example. If you implement the example shown in this section, right-click the image to save it locally.
 
@@ -215,8 +223,6 @@ Add a component to the RCL that uses the `extra-style` class.
 `ExtraStyles.razor` in the `ComponentLibrary` RCL:
 
 ```razor
-<Link href="_content/ComponentLibrary/additionalStyles.css" rel="stylesheet" />
-
 <div class="extra-style">
     <p>
         This component is defined in the <strong>ComponentLibrary</strong> package.
@@ -237,26 +243,17 @@ Add a page to the app that uses the `ExtraStyles` component from the RCL.
 <ExtraStyles />
 ```
 
-When the `Link` component is used in a child component, the linked asset is also available to any other child component of the parent component if the child with the `Link` component is rendered.
+Link to the library's stylesheet in the app's `<head>` markup ([location of `<head>` content](xref:blazor/project-structure#location-of-head-content)).
 
-An alternative to using the `Link` component is to link to the library's stylesheet in the app's `<head>` markup.
-
-`wwwroot/index.html` file (Blazor WebAssembly) or `Pages/_Layout.cshtml` file (Blazor Server):
-
-```diff
-+ <link href="_content/ComponentLibrary/additionalStyles.css" rel="stylesheet" />
+```html
+<link href="_content/ComponentLibrary/additionalStyles.css" rel="stylesheet" />
 ```
 
-The distinction between using the `Link` component in a child component and placing a `<link>` HTML tag in `wwwroot/index.html` or `Pages/_Host.cshtml` is that a framework component's rendered HTML tag:
-
-* Can be modified by application state. A hard-coded `<link>` HTML tag can't be modified by application state.
-* Is removed from the HTML `<head>` when the parent component is no longer rendered.
-
-## Create an RCL with static assets
+## Create an RCL with static assets in the `wwwroot` folder
 
 An RCL's static assets are available to any app that consumes the library.
 
-Place static assets in the `wwwroot` folder of the RCL and reference the static assets with the following path in the app: `_content/{LIBRARY NAME}/{PATH AND FILE NAME}`. The `{LIBRARY NAME}` placeholder is the library name. The `{PATH AND FILE NAME}` placeholder is path and file name under `wwwroot`.
+Place static assets in the `wwwroot` folder of the RCL and reference the static assets with the following path in the app: `_content/{PACKAGE ID}/{PATH AND FILE NAME}`. The `{PACKAGE ID}` placeholder is the library's [package ID](/nuget/create-packages/creating-a-package-msbuild#set-properties). The package ID defaults to the project's assembly name if `<PackageId>` isn't specified in the project file. The `{PATH AND FILE NAME}` placeholder is path and file name under `wwwroot`. This path format is also used in the app for static assets supplied by NuGet packages added to the RCL.
 
 The following example demonstrates the use of RCL static assets with an RCL named `ComponentLibrary` and a Blazor app that consumes the RCL. The app has a project reference for the `ComponentLibrary` RCL.
 
@@ -311,6 +308,10 @@ Rendered `Jeep` component:
 
 For more information, see <xref:razor-pages/ui-class#create-an-rcl-with-static-assets>.
 
+## Create an RCL with JavaScript files collocated with components
+
+[!INCLUDE[](~/includes/js-collocation.md)]
+
 ## Supply components and static assets to multiple hosted Blazor apps
 
 For more information, see <xref:blazor/host-and-deploy/webassembly#static-assets-and-class-libraries-for-multiple-blazor-webassembly-apps>.
@@ -330,6 +331,10 @@ Blazor WebAssembly and RCL projects *automatically* enable browser compatibility
 When authoring a library, indicate that a particular API isn't supported in browsers by specifying `browser` to <xref:System.Runtime.Versioning.UnsupportedOSPlatformAttribute>:
 
 ```csharp
+using System.Runtime.Versioning;
+
+...
+
 [UnsupportedOSPlatform("browser")]
 private static string GetLoggingDirectory()
 {
@@ -368,13 +373,13 @@ Upload the package to NuGet using the [`dotnet nuget push`](/dotnet/core/tools/d
 * [Add an XML Intermediate Language (IL) Trimmer configuration file to a library](xref:blazor/host-and-deploy/configure-trimmer)
 * [CSS isolation support with Razor class libraries](xref:blazor/components/css-isolation#razor-class-library-rcl-support)
 
-::: moniker-end
+:::moniker-end
 
-::: moniker range=">= aspnetcore-5.0 < aspnetcore-6.0"
+:::moniker range=">= aspnetcore-5.0 < aspnetcore-6.0"
 
 Components can be shared in a [Razor class library (RCL)](xref:razor-pages/ui-class) across projects. Include components and static assets in an app from:
 
-* Another project in the solution.
+* Another project in the [solution](xref:blazor/tooling#visual-studio-solution-file-sln).
 * A referenced .NET library.
 * A NuGet package.
 
@@ -418,17 +423,17 @@ If the **Support pages and views** checkbox is selected to support pages and vie
 # [Visual Studio for Mac](#tab/visual-studio-mac)
 
 1. Create a new project.
-1. In the sidebar under **Web and Console**, select **App**. Under **ASP.NET Core**, select **Razor Class Library** from the project templates shown. Select **Next**.
-1. Select the target framework for the library with the **Target Framework** dropdown list. Select **Next**.
-1. In the **Configure your new Class Library** dialog, provide a project name in the **Project Name** field. Examples in this topic use the project name `ComponentLibrary`. Select **Create**.
+1. In the sidebar under **Web and Console**, select **App**. Under **ASP.NET Core**, select **Razor Class Library** from the project templates. Select **Continue**.
+1. Select the target framework for the library with the **Target framework** dropdown list. Select **Continue**.
+1. Provide a project name in the **Project name** field. Examples in this topic use the project name `ComponentLibrary`. Select **Create**.
 1. Add the RCL to a solution:
    1. Open the solution.
-   1. Right-click the solution in **Solution Explorer**. Select **Add** > **Existing Project**.
+   1. Right-click the solution in the **Solution** sidebar and select **Add** > **Existing Project**. Alternatively, use the **Add** > **Existing Project** menu command from the **File** menu.
    1. Navigate to the RCL's project file.
-   1. Select the RCL's project file (`.csproj`).
+   1. Select the RCL's project file (`.csproj`) and select **Open**.
 1. Add a reference to the RCL from the app:
-   1. Right-click the app project. Select **Add** > **Reference**.
-   1. Select the RCL project. Select **OK**.
+   1. Right-click the app project. Select **Add** > **Reference**. Alternatively, select the **Add Project Reference** menu command from the **Project** menu.
+   1. Select the RCL project's checkbox and reference the project with the **Select** button.
 
 If the **Support pages and views** checkbox is selected to support pages and views when generating the RCL from the template:
 
@@ -517,7 +522,13 @@ Alternatively, add a [`@using`](xref:mvc/views/razor#using) directive and use th
 <Component1 />
 ```
 
-For library components that use [CSS isolation](xref:blazor/components/css-isolation), the component styles are automatically made available to the consuming app. There's no need to link the library's individual component stylesheets in the app that consumes the library. For the preceding examples, `Component1`'s stylesheet (`Component1.razor.css`) is included automatically.
+For library components that use [CSS isolation](xref:blazor/components/css-isolation), the component styles are automatically made available to the consuming app. There's no need to manually link or import the library's individual component stylesheets or its bundled CSS file in the app that consumes the library. The app uses CSS imports to reference the RCL's bundled styles. The bundled styles aren't published as a static web asset of the app that consumes the library. For a class library named `ClassLib` and a Blazor app with a `BlazorSample.styles.css` stylesheet, the RCL's stylesheet is imported at the top of the app's stylesheet automatically at build time:
+  
+```css
+@import '_content/ClassLib/ClassLib.bundle.scp.css';
+```
+
+For the preceding examples, `Component1`'s stylesheet (`Component1.razor.css`) is bundled automatically.
 
 `Component1.razor.css` in the `ComponentLibrary` RCL:
 
@@ -540,7 +551,7 @@ The background image is also included from the RCL project template and resides 
 
 An RCL's static assets are available to any app that consumes the library.
 
-Place static assets in the `wwwroot` folder of the RCL and reference the static assets with the following path in the app: `_content/{LIBRARY NAME}/{PATH AND FILE NAME}`. The `{LIBRARY NAME}` placeholder is the library name. The `{PATH AND FILE NAME}` placeholder is path and file name under `wwwroot`.
+Place static assets in the `wwwroot` folder of the RCL and reference the static assets with the following path in the app: `_content/{PACKAGE ID}/{PATH AND FILE NAME}`. The `{PACKAGE ID}` placeholder is the library's [package ID](/nuget/create-packages/creating-a-package-msbuild#set-properties). The package ID defaults to the project's assembly name if `<PackageId>` isn't specified in the project file. The `{PATH AND FILE NAME}` placeholder is path and file name under `wwwroot`. This path format is also used in the app for static assets supplied by NuGet packages added to the RCL.
 
 The following example demonstrates the use of RCL static assets with an RCL named `ComponentLibrary` and a Blazor app that consumes the RCL. The app has a project reference for the `ComponentLibrary` RCL.
 
@@ -652,13 +663,13 @@ Upload the package to NuGet using the [`dotnet nuget push`](/dotnet/core/tools/d
 * [Add an XML Intermediate Language (IL) Trimmer configuration file to a library](xref:blazor/host-and-deploy/configure-trimmer)
 * [CSS isolation support with Razor class libraries](xref:blazor/components/css-isolation#razor-class-library-rcl-support)
 
-::: moniker-end
+:::moniker-end
 
-::: moniker range="< aspnetcore-5.0"
+:::moniker range="< aspnetcore-5.0"
 
 Components can be shared in a [Razor class library (RCL)](xref:razor-pages/ui-class) across projects. Include components and static assets in an app from:
 
-* Another project in the solution.
+* Another project in the [solution](xref:blazor/tooling#visual-studio-solution-file-sln).
 * A referenced .NET library.
 * A NuGet package.
 
@@ -690,17 +701,17 @@ If the **Support pages and views** checkbox is selected to support pages and vie
 # [Visual Studio for Mac](#tab/visual-studio-mac)
 
 1. Create a new project.
-1. In the sidebar under **Web and Console**, select **App**. Under **ASP.NET Core**, select **Razor Class Library** from the project templates shown. Select **Next**.
-1. Select the target framework for the library with the **Target Framework** dropdown list. Select **Next**.
-1. In the **Configure your new Class Library** dialog, provide a project name in the **Project Name** field. Examples in this topic use the project name `ComponentLibrary`. Select **Create**.
+1. In the sidebar under **Web and Console**, select **App**. Under **ASP.NET Core**, select **Razor Class Library** from the project templates. Select **Continue**.
+1. Select the target framework for the library with the **Target framework** dropdown list. Select **Continue**.
+1. Provide a project name in the **Project name** field. Examples in this topic use the project name `ComponentLibrary`. Select **Create**.
 1. Add the RCL to a solution:
    1. Open the solution.
-   1. Right-click the solution in **Solution Explorer**. Select **Add** > **Existing Project**.
+   1. Right-click the solution in the **Solution** sidebar and select **Add** > **Existing Project**. Alternatively, use the **Add** > **Existing Project** menu command from the **File** menu.
    1. Navigate to the RCL's project file.
-   1. Select the RCL's project file (`.csproj`).
+   1. Select the RCL's project file (`.csproj`) and select **Open**.
 1. Add a reference to the RCL from the app:
-   1. Right-click the app project. Select **Add** > **Reference**.
-   1. Select the RCL project. Select **OK**.
+   1. Right-click the app project. Select **Add** > **Reference**. Alternatively, select the **Add Project Reference** menu command from the **Project** menu.
+   1. Select the RCL project's checkbox and reference the project with the **Select** button.
 
 If the **Support pages and views** checkbox is selected to support pages and views when generating the RCL from the template, add an `_Imports.razor` file to root of the generated RCL project with the following contents to enable Razor component authoring:
 
@@ -798,15 +809,15 @@ To provide `Component1`'s `my-component` CSS class, link to the library's styles
 
 `wwwroot/index.html` file (Blazor WebAssembly) or `Pages/_Host.cshtml` file (Blazor Server):
 
-```diff
-+ <link href="_content/ComponentLibrary/styles.css" rel="stylesheet" />
+```html
+<link href="_content/ComponentLibrary/styles.css" rel="stylesheet" />
 ```
 
 ## Create an RCL with static assets
 
 An RCL's static assets are available to any app that consumes the library.
 
-Place static assets in the `wwwroot` folder of the RCL and reference the static assets with the following path in the app: `_content/{LIBRARY NAME}/{PATH AND FILE NAME}`. The `{LIBRARY NAME}` placeholder is the library name. The `{PATH AND FILE NAME}` placeholder is path and file name under `wwwroot`.
+Place static assets in the `wwwroot` folder of the RCL and reference the static assets with the following path in the app: `_content/{PACKAGE ID}/{PATH AND FILE NAME}`. The `{PACKAGE ID}` placeholder is the library's [package ID](/nuget/create-packages/creating-a-package-msbuild#set-properties). The package ID defaults to the project's assembly name if `<PackageId>` isn't specified in the project file. The `{PATH AND FILE NAME}` placeholder is path and file name under `wwwroot`. This path format is also used in the app for static assets supplied by NuGet packages added to the RCL.
 
 The following example demonstrates the use of RCL static assets with an RCL named `ComponentLibrary` and a Blazor app that consumes the RCL. The app has a project reference for the `ComponentLibrary` RCL.
 
@@ -884,4 +895,4 @@ Upload the package to NuGet using the [`dotnet nuget push`](/dotnet/core/tools/d
 * <xref:razor-pages/ui-class>
 * [Add an XML Intermediate Language (IL) Linker configuration file to a library](xref:blazor/host-and-deploy/configure-linker#add-an-xml-linker-configuration-file-to-a-library)
 
-::: moniker-end
+:::moniker-end

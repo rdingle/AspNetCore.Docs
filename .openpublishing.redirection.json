@@ -1,6 +1,11 @@
 {
     "redirections": [
         {
+            "source_path": "aspnetcore/client-side/spa/react-with-redux.md",
+            "redirect_url": "/aspnet/core/client-side/spa/intro",
+            "redirect_document_id": false
+        },
+        {
             "source_path": "aspnet/core/host-and-deploy/azure-apps/azure-continuous-deployment.md",
             "redirect_url": "/azure/app-service/deploy-continuous-deployment",
             "redirect_document_id": false
@@ -292,8 +297,13 @@
         },
         {
             "source_path": "aspnetcore/performance/measuring.md",
-            "redirect_url": "/aspnet/core/performance/",
+            "redirect_url": "/aspnet/core/performance/overview",
             "redirect_document_id": false
+        },
+        {
+            "source_path": "aspnetcore/performance/performance-best-practices.md",
+            "redirect_url": "/aspnet/core/fundamentals/best-practices",
+            "redirect_document_id": true
         },
         {
             "source_path": "aspnetcore/security/authentication/oauth2.md",
@@ -802,12 +812,12 @@
         },
         {
             "source_path": "aspnetcore/razor-components/get-started.md",
-            "redirect_url": "https://dotnet.microsoft.com/learn/aspnet/blazor-tutorial/intro",
+            "redirect_url": "/aspnet/core/blazor/tutorials/",
             "redirect_document_id": false
         },
         {
             "source_path": "aspnetcore/client-side/spa/blazor/get-started.md",
-            "redirect_url": "https://dotnet.microsoft.com/learn/aspnet/blazor-tutorial/intro",
+            "redirect_url": "/aspnet/core/blazor/tutorials/",
             "redirect_document_id": false
         },
         {
@@ -822,7 +832,7 @@
         },
         {
             "source_path": "aspnetcore/razor-components/forms-validation.md",
-            "redirect_url": "/aspnet/core/blazor/forms-validation",
+            "redirect_url": "/aspnet/core/blazor/forms-and-input-components",
             "redirect_document_id": false
         },
         {
@@ -882,7 +892,7 @@
         },
         {
             "source_path": "aspnetcore/tutorials/build-your-first-razor-components-app.md",
-            "redirect_url": "/aspnet/core/tutorials/build-a-blazor-app",
+            "redirect_url": "/aspnet/core/blazor/tutorials/",
             "redirect_document_id": false
         },
         {
@@ -1027,7 +1037,7 @@
         },
         {
             "source_path": "aspnetcore/performance/blazor/webassembly-best-practices.md",
-            "redirect_url": "/aspnet/core/blazor/webassembly-performance-best-practices",
+            "redirect_url": "/aspnet/core/blazor/performance",
             "redirect_document_id": false
         },
         {
@@ -1087,12 +1097,12 @@
         },
         {
             "source_path": "aspnetcore/tutorials/build-your-first-blazor-app.md",
-            "redirect_url": "https://dotnet.microsoft.com/learn/aspnet/blazor-tutorial/intro",
+            "redirect_url": "/aspnet/core/blazor/tutorials/",
             "redirect_document_id": false
         },
         {
             "source_path": "aspnetcore/blazor/get-started.md",
-            "redirect_url": "https://dotnet.microsoft.com/learn/aspnet/blazor-tutorial/intro",
+            "redirect_url": "/aspnet/core/blazor/tutorials/",
             "redirect_document_id": false
         },
         {
@@ -1153,6 +1163,60 @@
             "source_path": "aspnetcore/blazor/layouts.md",
             "redirect_url": "/aspnet/core/blazor/components/layouts",
             "redirect_document_id": false
+        },
+        {
+            "source_path": "aspnetcore/blazor/webassembly-performance-best-practices.md",
+            "redirect_url": "/aspnet/core/blazor/performance",
+            "redirect_document_id": false
+        },
+        {
+            "source_path": "aspnetcore/blazor/tutorials.md",
+            "redirect_url": "/aspnet/core/blazor/tutorials/",
+            "redirect_document_id": false
+        },
+        {
+            "source_path": "aspnetcore/tutorials/build-a-blazor-app.md",
+            "redirect_url": "/aspnet/core/blazor/tutorials/build-a-blazor-app",
+            "redirect_document_id": false
+        },
+        {
+            "source_path": "aspnetcore/tutorials/signalr-blazor.md",
+            "redirect_url": "/aspnet/core/blazor/tutorials/signalr-blazor",
+            "redirect_document_id": false
+        },
+        {
+            "source_path": "aspnetcore/blazor/forms-validation.md",
+            "redirect_url": "/aspnet/core/blazor/forms-and-input-components",
+            "redirect_document_id": false
+        },
+        {
+            "source_path": "aspnetcore/grpc/httpapi.md",
+            "redirect_url": "/aspnet/core/grpc/json-transcoding",
+            "redirect_document_id": false
+        },
+        {
+            "source_path": "aspnetcore/whats-new/dotnet-AspNetCore.Docs-2022-03-01.md",
+            "redirect_url": "/aspnet/whats-new/dotnet-AspNetCore.Docs-mod5"
+        },
+        {
+            "source_path": "aspnetcore/whats-new/dotnet-AspNetCore.Docs-2022-04-01.md",
+            "redirect_url": "/aspnet/whats-new/dotnet-AspNetCore.Docs-mod0"
+        },
+        {
+            "source_path": "aspnetcore/whats-new/dotnet-AspNetCore.Docs-2022-07-01.md",
+            "redirect_url": "/aspnet/whats-new/dotnet-AspNetCore.Docs-mod1"
+        },
+        {
+            "source_path": "aspnetcore/whats-new/dotnet-AspNetCore.Docs-2022-08-01.md",
+            "redirect_url": "/aspnet/whats-new/dotnet-AspNetCore.Docs-mod2"
+        },
+        {
+            "source_path": "aspnetcore/whats-new/dotnet-AspNetCore.Docs-2022-09-01.md",
+            "redirect_url": "/aspnet/whats-new/dotnet-AspNetCore.Docs-mod3"
+        },
+        {
+            "source_path": "aspnetcore/whats-new/dotnet-AspNetCore.Docs-2022-10-01.md",
+            "redirect_url": "/aspnet/whats-new/dotnet-AspNetCore.Docs-mod4"
         }
     ]
 }
